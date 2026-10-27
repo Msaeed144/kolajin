@@ -1,0 +1,96 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-persian);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-saffron: var(--saffron);
+  --color-ember: var(--ember);
+}
+
+:root {
+  /* Swap the Persian font here (also update the <link> in __root.tsx). */
+  --font-persian: "Vazirmatn", system-ui, sans-serif;
+  --radius: 1rem;
+  --background: oklch(0.14 0.012 50);
+  --foreground: oklch(0.95 0.015 80);
+  --card: oklch(0.19 0.016 50);
+  --card-foreground: oklch(0.95 0.015 80);
+  --popover: oklch(0.19 0.016 50);
+  --popover-foreground: oklch(0.95 0.015 80);
+  --primary: oklch(0.76 0.15 68);
+  --primary-foreground: oklch(0.16 0.02 50);
+  --secondary: oklch(0.23 0.018 50);
+  --secondary-foreground: oklch(0.95 0.015 80);
+  --muted: oklch(0.22 0.015 50);
+  --muted-foreground: oklch(0.68 0.025 70);
+  --accent: oklch(0.26 0.03 55);
+  --accent-foreground: oklch(0.95 0.015 80);
+  --destructive: oklch(0.6 0.2 27);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.76 0.15 68);
+  --saffron: oklch(0.76 0.15 68);
+  --ember: oklch(0.45 0.11 45);
+
+  --gradient-page: radial-gradient(120% 80% at 50% 0%, oklch(0.24 0.045 50) 0%, oklch(0.14 0.012 50) 55%, oklch(0.1 0.006 50) 100%);
+  --gradient-spot: radial-gradient(closest-side, oklch(0.5 0.12 55 / 0.45), transparent);
+  --gradient-saffron: linear-gradient(135deg, oklch(0.82 0.14 80), oklch(0.68 0.16 55));
+  --shadow-glow: 0 10px 40px -10px oklch(0.76 0.15 68 / 0.55);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--gradient-page);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-persian);
+    min-height: 100vh;
+  }
+}
+
+@utility bg-spot { background: var(--gradient-spot); }
+@utility bg-saffron-gradient { background: var(--gradient-saffron); }
+@utility shadow-glow { box-shadow: var(--shadow-glow); }
+@utility text-gradient {
+  background: var(--gradient-saffron);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes steam-rise {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  30% { opacity: 0.35; }
+  100% { transform: translateY(-120px) scale(1.6); opacity: 0; }
+}
+@utility animate-steam { animation: steam-rise 3.5s ease-out infinite; }
