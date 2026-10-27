@@ -78,7 +78,15 @@ const steamFrag = /* glsl */ `
 
 const ease = (k: number, dt: number) => 1 - Math.exp(-k * dt);
 
-function Steam({ count, opacityRef, hoverRef }: { count: number; opacityRef: React.MutableRefObject<number>; hoverRef: React.MutableRefObject<number> }) {
+function Steam({
+  count,
+  opacityRef,
+  hoverRef,
+}: {
+  count: number;
+  opacityRef: React.MutableRefObject<number>;
+  hoverRef: React.MutableRefObject<number>;
+}) {
   const { gl } = useThree();
   const geo = useMemo(() => {
     const g = new THREE.BufferGeometry();
@@ -95,7 +103,13 @@ function Steam({ count, opacityRef, hoverRef }: { count: number; opacityRef: Rea
     return g;
   }, [count]);
   const uniforms = useMemo(
-    () => ({ uTime: { value: 0 }, uSpeed: { value: 0.18 }, uSway: { value: 0 }, uIntensity: { value: 0.22 }, uPx: { value: gl.getPixelRatio() } }),
+    () => ({
+      uTime: { value: 0 },
+      uSpeed: { value: 0.18 },
+      uSway: { value: 0 },
+      uIntensity: { value: 0.22 },
+      uPx: { value: gl.getPixelRatio() },
+    }),
     [gl],
   );
   useFrame((_, raw) => {
@@ -107,12 +121,27 @@ function Steam({ count, opacityRef, hoverRef }: { count: number; opacityRef: Rea
   });
   return (
     <points geometry={geo}>
-      <shaderMaterial vertexShader={steamVert} fragmentShader={steamFrag} uniforms={uniforms} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
+      <shaderMaterial
+        vertexShader={steamVert}
+        fragmentShader={steamFrag}
+        uniforms={uniforms}
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
     </points>
   );
 }
 
-function Bowl({ index, image, mobile }: { index: number; image: string; mobile: boolean }) {
+function Bowl({
+  index,
+  image,
+  mobile,
+}: {
+  index: number;
+  image: string;
+  mobile: boolean;
+}) {
   const tex = useTexture(image);
   tex.colorSpace = THREE.SRGBColorSpace;
   const group = useRef<THREE.Group>(null);
@@ -121,7 +150,13 @@ function Bowl({ index, image, mobile }: { index: number; image: string; mobile: 
   const hover = useRef(0);
   const opacity = useRef(index === 0 ? 1 : 0);
   const uniforms = useMemo(
-    () => ({ uMap: { value: tex }, uTime: { value: 0 }, uHover: { value: 0 }, uOpacity: { value: 1 }, uGlow: { value: new THREE.Color("#f2a33a") } }),
+    () => ({
+      uMap: { value: tex },
+      uTime: { value: 0 },
+      uHover: { value: 0 },
+      uOpacity: { value: 1 },
+      uGlow: { value: new THREE.Color("#f2a33a") },
+    }),
     [tex],
   );
 
@@ -129,11 +164,20 @@ function Bowl({ index, image, mobile }: { index: number; image: string; mobile: 
     const dt = Math.min(raw, 0.05);
     const local = showcaseState.progress - index;
     const g = group.current!;
-    let y = 0, z = 0, rz = 0, s = 1;
+    let y = 0,
+      z = 0,
+      rz = 0,
+      s = 1;
     if (local < 0) {
-      y = local * 3; z = -local * 1.5; rz = local * 0.5; s = 1 + local * -0.25;
+      y = local * 3;
+      z = -local * 1.5;
+      rz = local * 0.5;
+      s = 1 + local * -0.25;
     } else {
-      y = local * 2.2; z = -local * 3; rz = local * -0.3; s = 1 - local * 0.2;
+      y = local * 2.2;
+      z = -local * 3;
+      rz = local * -0.3;
+      s = 1 - local * 0.2;
     }
     const op = THREE.MathUtils.clamp(1 - Math.abs(local) * 1.4, 0, 1);
     opacity.current = op;
@@ -142,7 +186,8 @@ function Bowl({ index, image, mobile }: { index: number; image: string; mobile: 
     g.scale.setScalar(s);
     g.visible = op > 0.01;
 
-    hover.current += (hoverTarget.current * (op > 0.5 ? 1 : 0) - hover.current) * ease(5, dt);
+    hover.current +=
+      (hoverTarget.current * (op > 0.5 ? 1 : 0) - hover.current) * ease(5, dt);
     uniforms.uTime.value += dt;
     uniforms.uHover.value = hover.current;
     uniforms.uOpacity.value = op;
@@ -150,7 +195,8 @@ function Bowl({ index, image, mobile }: { index: number; image: string; mobile: 
     if (tilt.current) {
       const k = mobile ? 0 : 0.35 + hover.current * 0.25;
       const t = tilt.current;
-      t.rotation.x += (-state.pointer.y * k - 0.15 - t.rotation.x) * ease(4, dt);
+      t.rotation.x +=
+        (-state.pointer.y * k - 0.15 - t.rotation.x) * ease(4, dt);
       t.rotation.y += (state.pointer.x * k - t.rotation.y) * ease(4, dt);
     }
   });
@@ -169,13 +215,26 @@ function Bowl({ index, image, mobile }: { index: number; image: string; mobile: 
       </mesh>
       <group ref={tilt}>
         <mesh
-          onPointerOver={() => { hoverTarget.current = 1; }}
-          onPointerOut={() => { hoverTarget.current = 0; }}
+          onPointerOver={() => {
+            hoverTarget.current = 1;
+          }}
+          onPointerOut={() => {
+            hoverTarget.current = 0;
+          }}
         >
           <planeGeometry args={[3, 3, mobile ? 32 : 96, mobile ? 32 : 96]} />
-          <shaderMaterial vertexShader={bowlVert} fragmentShader={bowlFrag} uniforms={uniforms} transparent />
+          <shaderMaterial
+            vertexShader={bowlVert}
+            fragmentShader={bowlFrag}
+            uniforms={uniforms}
+            transparent
+          />
         </mesh>
-        <Steam count={mobile ? 36 : 110} opacityRef={opacity} hoverRef={hover} />
+        <Steam
+          count={mobile ? 36 : 110}
+          opacityRef={opacity}
+          hoverRef={hover}
+        />
       </group>
     </group>
   );
@@ -183,7 +242,11 @@ function Bowl({ index, image, mobile }: { index: number; image: string; mobile: 
 
 export default function BowlScene({ mobile }: { mobile: boolean }) {
   return (
-    <Canvas dpr={mobile ? [1, 1.5] : [1, 2]} camera={{ position: [0, 0.3, 7], fov: 40 }} gl={{ antialias: !mobile, alpha: true }}>
+    <Canvas
+      dpr={mobile ? [1, 1.5] : [1, 2]}
+      camera={{ position: [0, 0.3, 7], fov: 40 }}
+      gl={{ antialias: !mobile, alpha: true }}
+    >
       <Suspense fallback={null}>
         {dishes.map((d, i) => (
           <Bowl key={d.id} index={i} image={d.image} mobile={mobile} />
