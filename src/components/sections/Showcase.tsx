@@ -1,6 +1,7 @@
 import { ClientOnly } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { Steam } from "@/components/Steam";
 import { dishes } from "@/lib/dishes";
 import { scrollToId } from "@/lib/navigation";
 import { showcaseState } from "@/lib/scroll-state";
@@ -19,28 +20,40 @@ function useIsMobile() {
   return m;
 }
 
-function StaticBowl({ active }: { active: number }) {
+function StaticBowl({
+  active,
+  intensity = 1,
+  steam = true,
+}: {
+  active: number;
+  intensity?: number;
+  steam?: boolean;
+}) {
   return (
     <div className="relative flex h-full items-center justify-center">
       <AnimatePresence mode="wait">
-        <motion.img
+        <motion.div
           key={active}
-          src={dishes[active]!.image}
-          alt={dishes[active]!.name}
           initial={{ opacity: 0, y: 60, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -40, scale: 0.9 }}
           transition={{ duration: 0.6 }}
-          className="w-[78%] max-w-sm drop-shadow-2xl"
-        />
+          className="relative w-[78%] max-w-sm"
+        >
+          <img
+            src={dishes[active]!.image}
+            alt={dishes[active]!.name}
+            draggable={false}
+            className="w-full drop-shadow-2xl"
+          />
+          {steam && (
+            <Steam
+              intensity={intensity}
+              className="absolute bottom-[57%] left-1/2 h-[72%] aspect-square -translate-x-1/2"
+            />
+          )}
+        </motion.div>
       </AnimatePresence>
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className="animate-steam absolute top-1/3 h-16 w-16 rounded-full bg-foreground/20 blur-xl"
-          style={{ animationDelay: `${i * 1.1}s`, right: `${40 + i * 8}%` }}
-        />
-      ))}
     </div>
   );
 }
@@ -83,6 +96,11 @@ export function Showcase() {
   }, []);
 
   const d = dishes[active] ?? dishes[0]!;
+  const dishProgress = progress * (dishes.length - 1);
+  const steamIntensity = Math.max(
+    0,
+    1 - Math.abs(dishProgress - Math.round(dishProgress)) * 2.2,
+  );
 
   return (
     <section
@@ -125,16 +143,24 @@ export function Showcase() {
               />
             </div>
           </div>
-          <div className="order-1 h-full min-h-[45vh] md:order-2">
-            <ClientOnly fallback={<StaticBowl active={0} />}>
+          <div className="relative order-1 h-full min-h-[45vh] md:order-2">
+            <ClientOnly fallback={<StaticBowl active={0} steam={false} />}>
               {mobile ? (
-                <StaticBowl active={active} />
+                <StaticBowl active={active} intensity={steamIntensity} />
               ) : (
-                <Suspense fallback={<StaticBowl active={active} />}>
+                <Suspense
+                  fallback={<StaticBowl active={active} steam={false} />}
+                >
                   <BowlScene mobile={mobile} />
                 </Suspense>
               )}
             </ClientOnly>
+            {!mobile && (
+              <Steam
+                intensity={steamIntensity}
+                className="absolute bottom-[54.1%] left-1/2 hidden h-[min(45%,32vw)] aspect-square -translate-x-1/2 md:block"
+              />
+            )}
           </div>
         </div>
       </div>
